@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expedition Archive — Aleksa's Game Dev Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --void:#0b0e0c;
+  --panel:#161b17;
+  --panel-edge:#282f28;
+  --ash:#565c57;
+  --text:#eae6dd;
+  --text-dim:#9aa39c;
+  --amber:#e7b23e;
+  --amber-dim:#6e5321;
+  --parchment:#d9c9a6;
+  --rust:#a8562f;
+  --moss:#5b6b4f;
+  --accent: var(--amber);
+  --accent-dim: var(--amber-dim);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+h1,h2,h3{ font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:-0.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+a{ color:inherit; text-decoration:none; }
+.hidden{ display:none !important; }
+.fade-in{ animation:fadeIn .5s ease both; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+
+/* ---------- NAV ---------- */
+.topnav{
+  position:fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px 32px;
+  background:linear-gradient(to bottom, rgba(11,14,12,0.95), rgba(11,14,12,0));
+}
+.brand{ font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.12em; color:var(--text-dim); }
+.brand b{ color:var(--text); }
+.nav-back{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.08em;
+  color:var(--accent); border:1px solid var(--accent-dim); padding:8px 14px; border-radius:2px;
+  transition:background .2s;
+}
+.nav-back:hover{ background:rgba(231,178,62,0.08); }
+
+/* ---------- HERO / MONITOR WALL ---------- */
+.hero{
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  position:relative; padding:120px 24px 60px; text-align:center; overflow:hidden;
+}
+.monitor-wall{
+  position:absolute; inset:0; display:grid;
+  grid-template-columns:repeat(6, 1fr); grid-template-rows:repeat(4, 1fr);
+  gap:6px; padding:6px; opacity:0.55; z-index:0;
+}
+.tile{
+  background:#0f1310; border:1px solid #20251f; position:relative; overflow:hidden;
+}
+.tile::after{
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
+}
+.tile.live{ background:#1a1305; border-color:var(--amber-dim); animation:flicker 4.5s infinite; }
+.tile.live .tag{
+  position:absolute; bottom:6px; left:6px; font-family:'IBM Plex Mono',monospace; font-size:9px;
+  color:var(--amber); letter-spacing:0.08em; opacity:0.85;
+}
+.tile.off .tag{
+  position:absolute; bottom:6px; left:6px; font-family:'IBM Plex Mono',monospace; font-size:8px;
+  color:var(--ash); letter-spacing:0.06em; opacity:0.5;
+}
+@keyframes flicker{
+  0%,100%{ opacity:1; } 92%{ opacity:1; } 93%{ opacity:0.6; } 94%{ opacity:1; } 97%{ opacity:0.75; } 98%{ opacity:1; }
+}
+.hero-content{ position:relative; z-index:1; max-width:720px; }
+.hero-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.2em; color:var(--accent); margin-bottom:18px; }
+.hero h1{ font-size:clamp(2.2rem, 5vw, 3.6rem); margin-bottom:16px; }
+.hero p.sub{ color:var(--text-dim); font-size:1.05rem; max-width:520px; margin:0 auto; }
+.scroll-cue{ position:relative; z-index:1; margin-top:56px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:0.1em; }
+
+/* ---------- ABOUT ---------- */
+.about{ max-width:680px; margin:0 auto; padding:40px 24px 100px; text-align:center; }
+.about p{ color:var(--text-dim); font-size:1rem; }
+
+/* ---------- PROJECTS ---------- */
+.section-label{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; color:var(--accent);
+  text-align:center; margin-bottom:8px;
+}
+.section-title{ text-align:center; font-size:1.8rem; margin-bottom:48px; }
+.projects{ max-width:1080px; margin:0 auto; padding:0 24px 60px; }
+.project-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media (max-width:760px){ .project-grid{ grid-template-columns:1fr; } }
+
+.project-row{
+  display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;
+  padding:36px 0; border-bottom:1px solid var(--panel-edge); cursor:pointer;
+}
+.project-row:last-child{ border-bottom:none; }
+.project-row.reverse .media{ order:2; }
+.project-row.reverse .text-block{ order:1; }
+@media (max-width:760px){
+  .project-row, .project-row.reverse{ grid-template-columns:1fr; }
+  .project-row.reverse .media{ order:1; }
+  .project-row.reverse .text-block{ order:2; }
+}
+
+.media{
+  position:relative; aspect-ratio:16/10; background:#0f1310; border:1px solid var(--panel-edge);
+  border-radius:3px; overflow:hidden; transition:border-color .25s;
+}
+.project-row:hover .media{ border-color:var(--row-accent, var(--amber)); }
+.media::after{
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+}
+.play-btn{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:56px; height:56px; border-radius:50%; border:1.5px solid var(--row-accent, var(--amber));
+  display:flex; align-items:center; justify-content:center; transition:background .2s;
+}
+.project-row:hover .play-btn{ background:rgba(231,178,62,0.08); }
+.play-btn::after{
+  content:''; width:0; height:0; margin-left:4px;
+  border-top:9px solid transparent; border-bottom:9px solid transparent;
+  border-left:14px solid var(--row-accent, var(--amber));
+}
+.media .media-tag{
+  position:absolute; bottom:10px; left:12px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+  letter-spacing:0.08em; color:var(--ash); text-transform:uppercase;
+}
+
+.text-block .status{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--row-accent, var(--amber));
+  text-transform:uppercase; margin-bottom:10px;
+}
+.text-block h3{ font-size:1.6rem; margin-bottom:12px; }
+.text-block .hook{ color:var(--text-dim); font-size:0.98rem; margin-bottom:16px; }
+.text-block .enter{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.08em; color:var(--row-accent, var(--amber));
+  display:flex; align-items:center; gap:6px;
+}
+.text-block .enter .arrow{ transition:transform .2s; }
+.project-row:hover .enter .arrow{ transform:translateX(4px); }
+
+.project-row.brc{ --row-accent: var(--amber); }
+.project-row.relic{ --row-accent: var(--parchment); }
+
+.future-row{ display:flex; gap:6px; margin-top:24px; flex-wrap:wrap; justify-content:center; }
+.future-slot{
+  width:48px; height:34px; background:#0f1310; border:1px solid #20251f; border-radius:2px; position:relative;
+}
+.future-slot::after{ content:''; position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px); }
+.future-note{ text-align:center; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ash); margin-top:10px; letter-spacing:0.06em; }
+
+/* ---------- FOOTER ---------- */
+footer{ text-align:center; padding:40px 24px 60px; color:var(--ash); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.05em; }
+
+/* ---------- DETAIL VIEWS ---------- */
+.detail{ min-height:100vh; padding:110px 24px 80px; }
+.detail-inner{ max-width:760px; margin:0 auto; }
+.detail .status{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.14em; color:var(--accent); margin-bottom:14px; }
+.detail h1{ font-size:clamp(2rem, 4.5vw, 2.8rem); margin-bottom:18px; }
+.detail .hook{ font-size:1.15rem; color:var(--text-dim); margin-bottom:48px; max-width:600px; }
+
+.detail-section{ margin-bottom:44px; }
+.detail-section h2{ font-size:1.1rem; font-family:'IBM Plex Mono',monospace; letter-spacing:0.08em; color:var(--accent); text-transform:uppercase; margin-bottom:16px; }
+.detail-section p{ color:var(--text-dim); margin-bottom:12px; }
+.feature-list{ list-style:none; display:grid; gap:14px; }
+.feature-list li{
+  padding:16px 18px; background:var(--panel); border:1px solid var(--panel-edge); border-left:2px solid var(--accent);
+  border-radius:2px; color:var(--text); font-size:0.95rem;
+}
+.feature-list li b{ display:block; font-family:'Space Grotesk',sans-serif; font-size:1rem; margin-bottom:4px; }
+
+.wishlist-box{
+  margin-top:56px; padding:32px; background:var(--panel); border:1px solid var(--panel-edge); border-radius:4px; text-align:center;
+}
+.wishlist-box p.pre{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; color:var(--ash); margin-bottom:16px; text-transform:uppercase; }
+.wishlist-btn{
+  display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.08em;
+  padding:14px 28px; border:1px solid var(--accent); color:var(--accent); border-radius:2px;
+  opacity:0.55; cursor:not-allowed; text-transform:uppercase;
+}
+.wishlist-box small{ display:block; margin-top:14px; color:var(--ash); font-size:11px; }
+
+/* Relic Age theme override */
+#detail-relic{ --accent: var(--rust); }
+#detail-relic .feature-list li{ border-left-color:var(--rust); }
+#detail-relic .wishlist-btn{ border-color:var(--rust); color:var(--parchment); }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="brand"><b>EXPEDITION ARCHIVE</b> // ALEKSA</div>
+  <a class="nav-back hidden" id="backBtn" onclick="showHome()">&larr; ARCHIVE INDEX</a>
+</nav>
+
+<!-- ============ HOME ============ -->
+<div id="home">
+  <header class="hero">
+    <div class="monitor-wall" id="monitorWall"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">// FIELD LOGS FROM UNRELEASED WORLDS</div>
+      <h1>Expedition Archive</h1>
+      <p class="sub">A working record of the games I'm building — worlds sent out to be explored, mapped, and eventually released. Two active logs so far. More incoming.</p>
+    </div>
+    <div class="scroll-cue">SCROLL TO VIEW LOGS ↓</div>
+  </header>
+
+  <section class="about">
+    <p>I'm Aleksa, an indie game developer building original worlds and systems from the ground up — currently working in Unreal Engine 5. I lean hardest into world-building and mechanics design. Every project here starts as a real design document before a single line of code.</p>
+  </section>
+
+  <section class="projects">
+    <div class="section-label">// ACTIVE LOGS</div>
+    <h2 class="section-title">Open a Case File</h2>
+
+    <div class="project-row brc" onclick="showDetail('brc')">
+      <div class="media">
+        <div class="play-btn"></div>
+        <div class="media-tag">Trailer coming soon</div>
+      </div>
+      <div class="text-block">
+        <div class="status">● Log 01 — In Development, UE5</div>
+        <h3>Backrooms: Command</h3>
+        <p class="hook">You don't explore the Backrooms. You send people in and watch what happens. A management sim built around live camera feeds, a hired expedition crew, and a research economy — the first Backrooms game that isn't first-person horror exploration.</p>
+        <div class="enter">VIEW LOG <span class="arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="project-row relic reverse" onclick="showDetail('relic')">
+      <div class="media">
+        <div class="play-btn"></div>
+        <div class="media-tag">Trailer coming soon</div>
+      </div>
+      <div class="text-block">
+        <div class="status">● Log 02 — Concept Document</div>
+        <h3>Relic Age</h3>
+        <p class="hook">Centuries after collapse, survivors fight with scavenged future-tech they've mistaken for magic. An action-RPG about uncovering a history the ruling class buried — one relic, one region, one boss at a time.</p>
+        <div class="enter">VIEW LOG <span class="arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="future-row" id="futureRow"></div>
+    <div class="future-note">MORE LOGS BEING PREPARED</div>
+  </section>
+
+  <footer>EXPEDITION ARCHIVE — MAINTAINED BY ALEKSA — LOGS UPDATED AS DEVELOPMENT PROGRESSES</footer>
+</div>
+
+<!-- ============ DETAIL: BACKROOMS COMMAND ============ -->
+<section class="detail hidden" id="detail-brc">
+  <div class="detail-inner">
+    <div class="status">LOG 01 — IN DEVELOPMENT (UNREAL ENGINE 5)</div>
+    <h1>Backrooms: Command</h1>
+    <p class="hook">Run a retail store by day. Fund a research empire into the Backrooms by night. Direct hired expedition teams through camera feeds from your HQ — and decide when to pull them out before something notices them.</p>
+
+    <div class="detail-section">
+      <h2>The Pitch</h2>
+      <p>Every existing Backrooms game puts you inside the liminal space, alone, running from something. Backrooms: Command puts you behind the monitors instead — hiring, equipping, and managing teams who go in so you don't have to. It starts personal, though: before any of the management systems unlock, you go in yourself.</p>
+    </div>
+
+    <div class="detail-section">
+      <h2>How It Plays</h2>
+      <ul class="feature-list">
+        <li><b>Five Levels, Five Identities</b> Normal Backrooms, the Poolrooms, an Abandoned Office, the Fun Level, and the Infinite Field — each with its own danger profile and mechanics.</li>
+        <li><b>Live Camera Feeds</b> Physical in-world monitors, not menu overlays. What you see is what your HQ actually sees.</li>
+        <li><b>Research Economy</b> Six research pools feed a sprawling tech tree that gates new equipment, personnel, and access.</li>
+        <li><b>Personnel Under Pressure</b> Hired crew run on a three-state behavior model — Observe, Flee, Resume — reacting to what they encounter on the feed.</li>
+        <li><b>Consequences That Compound</b> Health risk, equipment cost, and government attention all scale with how deep you push.</li>
+      </ul>
+    </div>
+
+    <div class="wishlist-box">
+      <p class="pre">Steam Page</p>
+      <span class="wishlist-btn">Wishlist on Steam — Coming Soon</span>
+      <small>Not yet live. This will link out once the store page is up.</small>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DETAIL: RELIC AGE ============ -->
+<section class="detail hidden" id="detail-relic">
+  <div class="detail-inner">
+    <div class="status">LOG 02 — CONCEPT DOCUMENT</div>
+    <h1>Relic Age</h1>
+    <p class="hook">Long after civilization collapsed, survivors fight and build with scavenged fragments of technology they no longer understand — treated now as relics, rituals, and myth.</p>
+
+    <div class="detail-section">
+      <h2>The Pitch</h2>
+      <p>Relic Age is a real-time action-RPG set in a medieval world built on the ruins of a futuristic one. Superstition has replaced science. Somewhere above it all, ruling factions are quietly protecting the truth about how everything actually fell apart — and you're about to start finding pieces of it.</p>
+    </div>
+
+    <div class="detail-section">
+      <h2>How It Plays</h2>
+      <ul class="feature-list">
+        <li><b>A Fractured World</b> A handful of major factions and many smaller tribes, each with different access to old-world tech — mapped onto real-world geography reimagined as post-collapse.</li>
+        <li><b>Sword vs. Gun</b> Real-time combat built around a counter dynamic between relic melee weapons and the guns restricted to major factions only. Your relic sword is one of a handful left in existence.</li>
+        <li><b>Two Tiers of Loot</b> Common relic fragments grant incremental upgrades; major relics from boss fights unlock entire skill branches.</li>
+        <li><b>Parry or Dodge</b> A branching skill tree in the spirit of God of War — competency across both styles, mastery in one.</li>
+      </ul>
+    </div>
+
+    <div class="wishlist-box">
+      <p class="pre">Steam Page</p>
+      <span class="wishlist-btn">Wishlist on Steam — Coming Soon</span>
+      <small>Not yet live. This will link out once the store page is up.</small>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Build monitor wall: 24 tiles, 2 marked live (projects), rest off (future slots)
+  const wall = document.getElementById('monitorWall');
+  const liveLabels = ['LOG 01', 'LOG 02'];
+  const liveIndices = [8, 15];
+  for(let i=0;i<24;i++){
+    const t = document.createElement('div');
+    const isLive = liveIndices.includes(i);
+    t.className = 'tile ' + (isLive ? 'live' : 'off');
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.textContent = isLive ? liveLabels[liveIndices.indexOf(i)] : '— NO SIGNAL —';
+    t.appendChild(tag);
+    if(isLive) t.style.animationDelay = (Math.random()*3)+'s';
+    wall.appendChild(t);
+  }
+
+  // Future slots row (visual placeholder for more upcoming projects)
+  const futureRow = document.getElementById('futureRow');
+  for(let i=0;i<4;i++){
+    const s = document.createElement('div');
+    s.className = 'future-slot';
+    futureRow.appendChild(s);
+  }
+
+  function showDetail(which){
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('detail-brc').classList.add('hidden');
+    document.getElementById('detail-relic').classList.add('hidden');
+    const target = document.getElementById('detail-' + which);
+    target.classList.remove('hidden');
+    target.classList.add('fade-in');
+    document.getElementById('backBtn').classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+
+  function showHome(){
+    document.getElementById('detail-brc').classList.add('hidden');
+    document.getElementById('detail-relic').classList.add('hidden');
+    const home = document.getElementById('home');
+    home.classList.remove('hidden');
+    home.classList.add('fade-in');
+    document.getElementById('backBtn').classList.add('hidden');
+    window.scrollTo(0,0);
+  }
+</script>
+
+</body>
+</html>
